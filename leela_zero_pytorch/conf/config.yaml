@@ -5,5 +5,4 @@ train:
 pl_trainer: {}
 
 defaults:
-  - logger: wandb
   - data: leela-zero
