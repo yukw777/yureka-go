@@ -5,7 +5,6 @@ import pytorch_lightning as pl
 
 from typing import Tuple
 from omegaconf import DictConfig
-from pytorch_lightning.metrics.functional import accuracy
 
 from leela_zero_pytorch.dataset import DataPoint
 
@@ -197,6 +196,8 @@ class Network(nn.Module):
                                 + str(type(grand_child))
                             )
                             raise ValueError(err)
+                elif isinstance(child, pl.metrics.Accuracy):
+                    continue
                 else:
                     raise ValueError("Unknown layer type" + str(type(child)))
 
@@ -233,6 +234,11 @@ class NetworkLightningModule(Network, pl.LightningModule):  # type: ignore
         super().__init__(**network_conf)
         self.save_hyperparameters()  # type: ignore
 
+        # metrics
+        self.train_accuracy = pl.metrics.Accuracy()
+        self.val_accuracy = pl.metrics.Accuracy()
+        self.test_accuracy = pl.metrics.Accuracy()
+
     def loss(
         self,
         pred_move: torch.Tensor,
@@ -257,7 +263,7 @@ class NetworkLightningModule(Network, pl.LightningModule):  # type: ignore
             {
                 "train_mse_loss": mse_loss,
                 "train_ce_loss": cross_entropy_loss,
-                "train_acc": accuracy(pred_move, target_move),
+                "train_acc": self.train_accuracy(pred_move, target_move),
             }
         )
         return loss
@@ -273,7 +279,7 @@ class NetworkLightningModule(Network, pl.LightningModule):  # type: ignore
                 "val_loss": loss,
                 "val_mse_loss": mse_loss,
                 "val_ce_loss": cross_entropy_loss,
-                "val_acc": accuracy(pred_move, target_move),
+                "val_acc": self.val_accuracy(pred_move, target_move),
             }
         )
 
@@ -288,7 +294,7 @@ class NetworkLightningModule(Network, pl.LightningModule):  # type: ignore
                 "test_loss": loss,
                 "test_mse_loss": mse_loss,
                 "test_ce_loss": cross_entropy_loss,
-                "test_acc": accuracy(pred_move, target_move),
+                "test_acc": self.test_accuracy(pred_move, target_move),
             }
         )
 
