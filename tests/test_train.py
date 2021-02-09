@@ -7,7 +7,7 @@ from leela_zero_pytorch.train import main as train_main
 from leela_zero_pytorch.weights import main as weights_main
 
 
-@pytest.mark.parametrize("network_size", ["small"])
+@pytest.mark.parametrize("network_size", ["small", "big", "huge"])
 def test_train_network_size(network_size):
     with initialize(config_path="../leela_zero_pytorch/conf"):
         cfg = compose(
