@@ -274,12 +274,13 @@ class NetworkLightningModule(Network, pl.LightningModule):  # type: ignore
         mse_loss, cross_entropy_loss, loss = self.loss(
             pred_move, pred_val, target_move, target_val
         )
+        self.val_accuracy(pred_move, target_move),
         self.log_dict(
             {
                 "val_loss": loss,
                 "val_mse_loss": mse_loss,
                 "val_ce_loss": cross_entropy_loss,
-                "val_acc": self.val_accuracy(pred_move, target_move),
+                "val_acc": self.val_accuracy,
             }
         )
 
@@ -289,12 +290,13 @@ class NetworkLightningModule(Network, pl.LightningModule):  # type: ignore
         mse_loss, cross_entropy_loss, loss = self.loss(
             pred_move, pred_val, target_move, target_val
         )
+        self.test_accuracy(pred_move, target_move)
         self.log_dict(
             {
                 "test_loss": loss,
                 "test_mse_loss": mse_loss,
                 "test_ce_loss": cross_entropy_loss,
-                "test_acc": self.test_accuracy(pred_move, target_move),
+                "test_acc": self.test_accuracy,
             }
         )
 
